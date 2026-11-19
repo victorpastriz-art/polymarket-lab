@@ -19,7 +19,7 @@ import os
 import numpy as np
 import pandas as pd
 
-from comun import DATA, RESULTADOS
+from comun import DATA, RESULTADOS, anadir_columnas
 
 HORIZONTES = [168, 24, 6, 1]
 TRAMOS_PRECIO = [0, 0.01, 0.02, 0.05, 0.10, 0.15, 0.30, 0.50, 0.70, 0.85, 0.95, 0.98, 1.0001]
@@ -51,8 +51,11 @@ def ic_bootstrap_eventos(df, n_boot=1000, semilla=0):
 
 
 def tabla_larga(slip, fee, solo_yes):
-    m = pd.read_csv(os.path.join(DATA, "mercados.csv"))
     s = pd.read_csv(os.path.join(DATA, "snapshots.csv"))
+    m = pd.read_csv(os.path.join(DATA, "mercados.csv"),
+                    usecols=["market_id", "event_id", "pregunta", "categoria", "tags", "ganador_idx",
+                             "outcome0", "outcome1", "volumen"])
+    m = anadir_columnas(m[m["market_id"].isin(s["market_id"])].copy())
     d = s.merge(m, on="market_id", how="inner")
     d = d[d["ganador_idx"].notna()]
     filas = []
@@ -65,8 +68,7 @@ def tabla_larga(slip, fee, solo_yes):
                 "market_id": x["market_id"], "event_id": x["event_id"], "horizonte_h": h,
                 "lado": lado, "resultado": x[f"outcome{lado}"],
                 "precio": p, "gana": (x["ganador_idx"] == lado).astype(int),
-                "volumen": x["volumen"], "categoria": x["categoria"].fillna(""),
-                "tags": x["tags"].fillna(""), "es_mencion": x["es_mencion"].astype(bool),
+                "volumen": x["volumen"], "cat": x["cat"], "es_mencion": x["mencion"].astype(bool),
             }))
     L = pd.concat(filas, ignore_index=True)
     if solo_yes:
@@ -75,7 +77,6 @@ def tabla_larga(slip, fee, solo_yes):
     L["rend"] = L["gana"] / L["coste"] - 1  # rendimiento por euro apostado
     L["tramo_precio"] = pd.cut(L["precio"], TRAMOS_PRECIO, right=False)
     L["tramo_vol"] = pd.cut(L["volumen"], TRAMOS_VOL, labels=NOMBRES_VOL, right=False)
-    L["cat"] = L["categoria"].where(L["categoria"] != "", L["tags"].str.split("|").str[0]).replace("", "sin categoría")
     return L
 
 
@@ -162,6 +163,12 @@ def main():
     cols = ["tramo_vol", "n", "n_eventos", "precio_medio", "tasa_acierto", "rend_medio_por_euro", "rend_ic_bajo", "rend_ic_alto"]
     print("\nH2 a 24 h del cierre (longshots 1-15 cts):")
     print(vol[vol["horizonte_h"] == 24][cols].round(3).to_string(index=False))
+    print("\nH2 a 24 h por categoría:")
+    print(cat[cat["horizonte_h"] == 24].drop(columns="horizonte_h").round(3).to_string(index=False))
+    print("\nCalibración a 24 h (todos los precios):")
+    print(cal[cal["horizonte_h"] == 24].drop(columns="horizonte_h").round(3).to_string(index=False))
+    print("\nMercados de menciones a 24 h:")
+    print(men[men["horizonte_h"] == 24].drop(columns="horizonte_h").round(3).to_string(index=False))
     print("\nRegla de lectura: la H2 solo sobrevive en un grupo si rend_ic_bajo > 0 con n_eventos >= 30,"
           "\ny hay que repetirlo en datos nuevos (se han probado muchos grupos a la vez).")
 

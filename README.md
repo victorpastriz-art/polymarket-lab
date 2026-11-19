@@ -18,7 +18,7 @@ horizonte (168 h, 24 h, 6 h y 1 h antes del cierre).
 cd polymarket-lab
 py -m pip install -r requirements.txt
 py descargar_mercados.py --desde 2024-01
-py descargar_precios.py --muestra 20000
+py descargar_precios.py --por-categoria 800 --menciones 6000
 py analisis_h2.py
 ```
 Los tres pasos se pueden cortar y relanzar: siguen donde lo dejaron.

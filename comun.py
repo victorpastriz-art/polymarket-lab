@@ -58,3 +58,20 @@ def lista_json(valor):
         return v if isinstance(v, list) else []
     except (TypeError, ValueError):
         return []
+
+
+import re as _re
+
+_RE_MENCION = _re.compile(r"\b(?:say|says|mention|mentions)\b", _re.I)
+
+
+def anadir_columnas(df):
+    """Añade 'cat' (categoría o primera etiqueta) y 'mencion' (criterio estricto: etiqueta
+    Mentions o pregunta con say/mention; NO cuenta los mercados de nº de tweets/posts)."""
+    import pandas as pd
+    tags = df["tags"].fillna("").astype(str)
+    cat = df["categoria"].fillna("").astype(str)
+    df["cat"] = cat.where(cat != "", tags.str.split("|").str[0]).replace("", "sin categoría")
+    df["mencion"] = tags.str.lower().str.contains("mention") | \
+        df["pregunta"].fillna("").astype(str).str.contains(_RE_MENCION)
+    return df

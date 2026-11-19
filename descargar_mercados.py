@@ -19,7 +19,7 @@ import pandas as pd
 from comun import DATA, GAMMA, get_json, lista_json
 
 PAGINA = 100
-RE_MENCION = re.compile(r"\b(say|says|said|mention|mentions|tweet|tweets|post|posts)\b", re.I)
+RE_MENCION = re.compile(r"\b(?:say|says|mention|mentions)\b", re.I)
 
 
 def meses(desde, hasta):

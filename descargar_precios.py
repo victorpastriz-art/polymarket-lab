@@ -2,9 +2,12 @@
 (CLOB, solo lectura) y guarda el precio del resultado 0 a 168h, 24h, 6h y 1h del cierre.
 
 Uso:
-    python descargar_precios.py --muestra 20000          # todos los de menciones + aleatorios hasta 20.000
-    python descargar_precios.py --muestra 0               # TODOS los resueltos (puede tardar muchas horas)
+    python descargar_precios.py                                   # muestra estratificada por defecto
+    python descargar_precios.py --por-categoria 800 --menciones 6000
     python descargar_precios.py --desde 2025-01-01
+
+Muestra estratificada: hasta N mercados al azar POR CATEGORÍA (para que los millones de mercados
+cripto de 5 minutos no se coman la muestra) + hasta M mercados de menciones.
 
 Es reanudable: añade a data/snapshots.csv y salta los mercados ya hechos.
 """
@@ -13,7 +16,7 @@ import os
 
 import pandas as pd
 
-from comun import CLOB, DATA, get_json
+from comun import CLOB, DATA, anadir_columnas, get_json
 
 HORIZONTES_H = [168, 24, 6, 1]
 MAX_ANTIGUEDAD_H = 6  # si el último precio conocido es más viejo que esto, no lo usamos
@@ -47,22 +50,28 @@ def snapshots(historia, t_ref):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--muestra", type=int, default=20000, help="0 = todos")
+    ap.add_argument("--por-categoria", type=int, default=800)
+    ap.add_argument("--menciones", type=int, default=6000)
+    ap.add_argument("--max-categorias", type=int, default=30)
     ap.add_argument("--desde", default=None, help="AAAA-MM-DD (fecha de fin mínima)")
     ap.add_argument("--semilla", type=int, default=42)
     args = ap.parse_args()
 
-    m = pd.read_csv(os.path.join(DATA, "mercados.csv"))
-    m = m[m["ganador_idx"].notna()].copy()
+    m = pd.read_csv(os.path.join(DATA, "mercados.csv"),
+                    usecols=["market_id", "pregunta", "categoria", "tags", "ganador_idx", "token0",
+                             "fecha_fin", "fecha_cierre"])
+    m = anadir_columnas(m[m["ganador_idx"].notna()].copy())
     if args.desde:
         fin = pd.to_datetime(m["fecha_fin"], utc=True, errors="coerce")
         m = m[fin >= pd.Timestamp(args.desde, tz="UTC")]
 
-    if args.muestra and len(m) > args.muestra:
-        menc = m[m["es_mencion"].astype(bool)]
-        resto = m[~m["es_mencion"].astype(bool)]
-        n_resto = max(0, args.muestra - len(menc))
-        m = pd.concat([menc, resto.sample(min(n_resto, len(resto)), random_state=args.semilla)])
+    menc = m[m["mencion"]]
+    menc = menc.sample(min(args.menciones, len(menc)), random_state=args.semilla)
+    top = m["cat"].value_counts().head(args.max_categorias).index
+    partes = [g.sample(min(args.por_categoria, len(g)), random_state=args.semilla)
+              for c, g in m[m["cat"].isin(top) & ~m["mencion"]].groupby("cat")]
+    m = pd.concat([menc] + partes)
+    print(m["cat"].value_counts().to_string())
 
     ruta = os.path.join(DATA, "snapshots.csv")
     hechos = set()
