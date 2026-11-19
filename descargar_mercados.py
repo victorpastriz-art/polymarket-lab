@@ -12,7 +12,7 @@ Es reanudable: cada mes se guarda en data/meses/AAAA-MM.csv y se salta si ya exi
 import argparse
 import os
 import re
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 
 import pandas as pd
 
@@ -35,14 +35,27 @@ def limites_mes(a, m):
     return ini.strftime("%Y-%m-%dT%H:%M:%SZ"), fin.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def eventos_del_mes(a, m):
-    ini, fin = limites_mes(a, m)
-    offset = 0
+MAX_OFFSET = 1900  # la API rechaza offsets grandes (~2.000): si una ventana tiene más eventos, se parte
+
+
+def _fmt(t):
+    return t.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def eventos_ventana(ini, fin):
+    """Todos los eventos cerrados con fecha de fin en [ini, fin). Si no caben, parte la ventana en dos."""
+    lotes, offset = [], 0
     while True:
+        if offset > MAX_OFFSET:
+            if fin - ini <= timedelta(minutes=30):
+                print(f"  aviso: ventana {_fmt(ini)} con más de {offset} eventos, se queda incompleta")
+                break
+            medio = ini + (fin - ini) / 2
+            return eventos_ventana(ini, medio) + eventos_ventana(medio, fin)
         params = {
             "closed": "true",
-            "end_date_min": ini,
-            "end_date_max": fin,
+            "end_date_min": _fmt(ini),
+            "end_date_max": _fmt(fin),
             "limit": PAGINA,
             "offset": offset,
             "order": "id",
@@ -50,11 +63,25 @@ def eventos_del_mes(a, m):
         }
         lote = get_json(f"{GAMMA}/events", params)
         if not lote:
-            return
-        yield from lote
+            break
+        lotes.extend(lote)
         if len(lote) < PAGINA:
-            return
+            break
         offset += PAGINA
+    return lotes
+
+
+def eventos_del_mes(a, m):
+    ini, fin = (datetime.strptime(x, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc) for x in limites_mes(a, m))
+    vistos = set()
+    dia = ini
+    while dia < fin:
+        sig = min(dia + timedelta(days=1), fin)
+        for ev in eventos_ventana(dia, sig):
+            if ev.get("id") not in vistos:  # los límites de ventana pueden solaparse
+                vistos.add(ev.get("id"))
+                yield ev
+        dia = sig
 
 
 def ganador(precios):
