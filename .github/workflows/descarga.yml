@@ -1,0 +1,36 @@
+name: Descarga y análisis H2
+
+on:
+  workflow_dispatch:
+    inputs:
+      desde:
+        description: "Primer mes a descargar (AAAA-MM)"
+        default: "2024-01"
+      muestra:
+        description: "Mercados para el historial de precios (0 = todos)"
+        default: "20000"
+
+jobs:
+  h2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Paso 1 - mercados resueltos
+        run: python descargar_mercados.py --desde ${{ inputs.desde }}
+      - name: Paso 2 - historial de precios
+        run: python descargar_precios.py --muestra ${{ inputs.muestra }}
+      - name: Paso 3 - análisis H2
+        run: python analisis_h2.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: polymarket-lab-resultados
+          path: |
+            data/mercados.csv
+            data/snapshots.csv
+            resultados/
