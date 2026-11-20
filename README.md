@@ -54,3 +54,14 @@ Los tres pasos se pueden cortar y relanzar: siguen donde lo dejaron.
 - Los nombres de campos de la API pueden cambiar; si un paso da 0 filas, revisar los mensajes HTTP.
 - Pruebas hechas con un servidor simulado con el mismo formato que la API; la primera ejecución real es la
   verificación definitiva.
+
+## Paper trading de la H4 (en marcha)
+La H2 quedó rechazada (ver `resultados/`). Lo único positivo del backtest fue comprar **favoritos de 50–85
+céntimos** unas 24 h antes del cierre (+5% a +7% por apuesta), y puede ser un falso positivo. Para validarlo:
+
+- `paper_h4.py` se ejecuta solo cada 3 horas (workflow "Paper trading H4"). Usa el **precio ask real del libro**
+  y apunta operaciones ficticias de 10 $ en `paper/operaciones.csv`.
+- Las reglas se fijaron antes de empezar, en `paper/REGLAS.md`. No se cambian durante la prueba.
+- El estado se puede consultar en todo momento en `paper/resumen.md`.
+- **Alertas en Telegram (opcional):** en el repositorio, Settings → Secrets and variables → Actions →
+  New repository secret, crea `TELEGRAM_TOKEN` (el token de tu bot, de BotFather) y `TELEGRAM_CHAT_ID` (tu id de chat).
