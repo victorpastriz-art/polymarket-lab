@@ -1,4 +1,4 @@
-name: Confirmación H4 (muestra nueva)
+name: Confirmación H4 + histórico
 
 on:
   workflow_dispatch:
@@ -43,11 +43,18 @@ jobs:
         run: python descargar_precios.py --por-categoria ${{ inputs.por_categoria }} --menciones 0 --semilla 7 --salida snapshots_conf.csv --excluir original/data/snapshots.csv
       - name: Paso 3 - confirmación
         run: python confirmar_h4.py
+      - name: Paso 4 - histórico mes a mes de las cuatro carteras
+        run: python simular_historico.py --muestra descubrimiento=original/data/snapshots.csv --muestra confirmacion=data/snapshots_conf.csv
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: confirmacion-snapshots
+          path: data/snapshots_conf.csv
       - name: Guardar resultado en el repositorio
         if: always()
         run: |
           git config user.name "polymarket-lab-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add -f resultados/confirmacion_h4.md resultados/confirmacion_h4.csv || true
+          git add -f resultados/confirmacion_h4.md resultados/confirmacion_h4.csv resultados/historico.md resultados/historico_mensual.csv resultados/historico_panel.json || true
           git commit -m "Confirmación H4 (ejecución ${{ github.run_id }})" || exit 0
           for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
