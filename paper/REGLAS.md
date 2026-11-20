@@ -32,3 +32,22 @@ mercados futuros.
 
 ## Lo que esta prueba NO es
 Dinero ficticio. No hay cuenta, ni wallet, ni órdenes reales: solo se leen datos públicos.
+
+---
+
+## Enmienda 1 — 20-nov-2026, 20:05 hora de Madrid (antes de que se resolviera ninguna operación)
+Motivo: aumentar el número de apuestas para reducir el margen de error, y añadir carteras de comparación.
+Se escribe antes de conocer ningún resultado del paper trading.
+
+1. **H4-24h:** el límite por escaneo sube de 60 a **250** (en el primer escaneo se llenó el tope). Todo lo demás igual.
+2. **Nuevas carteras**, mismas reglas de precio real, liquidez mínima de 20 $, 10 $ por apuesta y una
+   operación por evento en cada cartera:
+   - **H4-4h:** igual que H4-24h, pero en mercados que cierran en **2–5 h**. Se evalúa con el mismo
+     criterio que H4-24h, por separado.
+   - **H2-control:** el lado **más barato** si su ask está entre **0,01 y 0,15**, a 21–24 h del cierre. Es un
+     control negativo: el backtest predice pérdidas. No se evalúa como estrategia.
+   - **Azar:** un lado elegido al azar (fijo por mercado) si su ask está entre 0,02 y 0,98, a 21–24 h. Es la
+     línea base. La H4 solo aporta algo si supera claramente al azar.
+3. **Tamaño de muestra:** con una ventaja real de +6% hacen falta unas 600 apuestas resueltas para que el
+   IC 95% excluya el 0, y unas 1.100 para detectarla con un 80% de probabilidad. El veredicto mínimo
+   (200 resueltas y 30 días) se mantiene, pero se espera "no concluyente" hasta acercarse a esas cifras.
