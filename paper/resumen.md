@@ -1,6 +1,20 @@
-# Paper trading H4 — favoritos de 50–85 céntimos a ~24 h del cierre
+# Paper trading — carteras ficticias en Polymarket
 
-_Actualizado: 2026-11-20 18:32 UTC · reglas en [REGLAS.md](REGLAS.md)_
+_Actualizado: 2026-11-20 19:11 UTC · reglas en [REGLAS.md](REGLAS.md)_
 
-- Operaciones: **60** (0 resueltas, 60 abiertas, 0 anuladas)
-- Días de prueba: **0** (veredicto a partir de 200 resueltas y 30 días)
+## H4-24h
+
+- Operaciones: **310** (0 resueltas, 310 abiertas, 0 anuladas)
+
+## H4-4h
+
+- Operaciones: **241** (0 resueltas, 241 abiertas, 0 anuladas)
+
+## H2-control
+
+- Operaciones: **40** (0 resueltas, 40 abiertas, 0 anuladas)
+
+## Azar
+
+- Operaciones: **250** (0 resueltas, 250 abiertas, 0 anuladas)
+
