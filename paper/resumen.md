@@ -1,6 +1,6 @@
 # Paper trading — carteras ficticias en Polymarket
 
-_Actualizado: 2026-11-20 19:11 UTC · reglas en [REGLAS.md](REGLAS.md)_
+_Actualizado: 2026-11-20 20:47 UTC · reglas en [REGLAS.md](REGLAS.md)_
 
 ## H4-24h
 
