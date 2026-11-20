@@ -1,20 +1,24 @@
 # Paper trading — carteras ficticias en Polymarket
 
-_Actualizado: 2026-11-20 20:47 UTC · reglas en [REGLAS.md](REGLAS.md)_
+_Actualizado: 2026-11-20 22:19 UTC · reglas en [REGLAS.md](REGLAS.md)_
 
 ## H4-24h
 
-- Operaciones: **310** (0 resueltas, 310 abiertas, 0 anuladas)
+- Operaciones: **560** (0 resueltas, 560 abiertas, 0 anuladas)
 
 ## H4-4h
 
-- Operaciones: **241** (0 resueltas, 241 abiertas, 0 anuladas)
+- Operaciones: **491** (58 resueltas, 433 abiertas, 0 anuladas)
+- Aciertos: **58.6%** (precio medio pagado 0.511)
+- P&L ficticio: **+85.24 $** sobre 580 $
+- Rendimiento por $: **+14.70%** (IC 95% por evento: -12.10% a +38.61%)
+- **Veredicto:** En curso (58/200 resueltas, 0/30 días).
 
 ## H2-control
 
-- Operaciones: **40** (0 resueltas, 40 abiertas, 0 anuladas)
+- Operaciones: **67** (0 resueltas, 67 abiertas, 0 anuladas)
 
 ## Azar
 
-- Operaciones: **250** (0 resueltas, 250 abiertas, 0 anuladas)
+- Operaciones: **500** (0 resueltas, 500 abiertas, 0 anuladas)
 
