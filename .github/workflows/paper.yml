@@ -26,7 +26,9 @@ jobs:
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python paper_h4.py
+        run: |
+          python paper_h4.py
+          python exportar_panel.py
       - name: Guardar en el repositorio
         run: |
           git config user.name "polymarket-lab-bot"
