@@ -55,12 +55,18 @@ def main():
     ap.add_argument("--max-categorias", type=int, default=30)
     ap.add_argument("--desde", default=None, help="AAAA-MM-DD (fecha de fin mínima)")
     ap.add_argument("--semilla", type=int, default=42)
+    ap.add_argument("--salida", default="snapshots.csv", help="fichero dentro de data/")
+    ap.add_argument("--excluir", default=None, help="CSV con columna market_id de mercados a no usar")
     args = ap.parse_args()
 
     m = pd.read_csv(os.path.join(DATA, "mercados.csv"),
                     usecols=["market_id", "pregunta", "categoria", "tags", "ganador_idx", "token0",
                              "fecha_fin", "fecha_cierre"])
     m = anadir_columnas(m[m["ganador_idx"].notna()].copy())
+    if args.excluir and os.path.exists(args.excluir):
+        usados = set(pd.read_csv(args.excluir, usecols=["market_id"])["market_id"].astype(str))
+        m = m[~m["market_id"].astype(str).isin(usados)]
+        print(f"Excluidos {len(usados)} mercados ya usados en el backtest anterior")
     if args.desde:
         fin = pd.to_datetime(m["fecha_fin"], utc=True, errors="coerce")
         m = m[fin >= pd.Timestamp(args.desde, tz="UTC")]
@@ -73,7 +79,7 @@ def main():
     m = pd.concat([menc] + partes)
     print(m["cat"].value_counts().to_string())
 
-    ruta = os.path.join(DATA, "snapshots.csv")
+    ruta = os.path.join(DATA, args.salida)
     hechos = set()
     if os.path.exists(ruta):
         hechos = set(pd.read_csv(ruta, usecols=["market_id"])["market_id"].astype(str))

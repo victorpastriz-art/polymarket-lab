@@ -1,0 +1,53 @@
+name: Confirmación H4 (muestra nueva)
+
+on:
+  workflow_dispatch:
+    inputs:
+      por_categoria:
+        description: "Mercados nuevos al azar por categoría"
+        default: "1200"
+      run_original:
+        description: "Ejecución cuyo backtest se excluye"
+        default: "44624425236"
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  confirmar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Recuperar meses ya descargados
+        uses: actions/cache@v4
+        with:
+          path: data/meses
+          key: meses-${{ github.run_id }}
+          restore-keys: meses-
+      - name: Mercados del backtest original (para excluirlos)
+        uses: actions/download-artifact@v4
+        with:
+          name: polymarket-lab-resultados
+          run-id: ${{ inputs.run_original }}
+          github-token: ${{ github.token }}
+          path: original
+      - name: Paso 1 - mercados resueltos (solo lo que falte)
+        run: python descargar_mercados.py --desde 2024-01
+      - name: Paso 2 - precios de una muestra NUEVA
+        run: python descargar_precios.py --por-categoria ${{ inputs.por_categoria }} --menciones 0 --semilla 7 --salida snapshots_conf.csv --excluir original/data/snapshots.csv
+      - name: Paso 3 - confirmación
+        run: python confirmar_h4.py
+      - name: Guardar resultado en el repositorio
+        if: always()
+        run: |
+          git config user.name "polymarket-lab-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -f resultados/confirmacion_h4.md resultados/confirmacion_h4.csv || true
+          git commit -m "Confirmación H4 (ejecución ${{ github.run_id }})" || exit 0
+          for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
