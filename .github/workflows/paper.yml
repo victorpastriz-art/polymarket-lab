@@ -2,7 +2,8 @@ name: Paper trading H4
 
 on:
   schedule:
-    - cron: "17 */3 * * *"   # cada 3 horas (minuto 17 para evitar la congestión de la hora en punto)
+    - cron: "17 */3 * * *"   # cada 3 horas: resolver + abrir apuestas nuevas
+    - cron: "47 * * * *"     # cada hora: solo resolver (para ver los resultados casi en tiempo real)
   workflow_dispatch: {}
 
 permissions:
@@ -27,7 +28,11 @@ jobs:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          python paper_h4.py
+          if [ "${{ github.event.schedule }}" = "47 * * * *" ]; then
+            python paper_h4.py --sin-entradas
+          else
+            python paper_h4.py
+          fi
           python exportar_panel.py
       - name: Guardar en el repositorio
         run: |
