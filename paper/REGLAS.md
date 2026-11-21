@@ -51,3 +51,23 @@ Se escribe antes de conocer ningún resultado del paper trading.
 3. **Tamaño de muestra:** con una ventaja real de +6% hacen falta unas 600 apuestas resueltas para que el
    IC 95% excluya el 0, y unas 1.100 para detectarla con un 80% de probabilidad. El veredicto mínimo
    (200 resueltas y 30 días) se mantiene, pero se espera "no concluyente" hasta acercarse a esas cifras.
+
+---
+
+## Enmienda 2 — 21-nov-2026, 12:40 hora de Madrid (antes de ninguna operación de las carteras nuevas)
+Motivo: el estudio de rachas (`resultados/regimenes.md`) encontró categorías que pierden con la H4 en las
+**dos** muestras históricas independientes (Tennis, Esports, Crypto, Up or Down). Un filtro de categorías
+diseñado en una muestra mejoró el resultado en la otra, en las dos direcciones. Se prueba hacia el futuro.
+
+**Nuevas carteras** (idénticas a la H4 en todo lo demás: ask real 0,50–0,85, liquidez de 20 $, 10 $ por
+apuesta, una por evento, hasta 250 por escaneo):
+- **H5-24h:** como H4-24h, pero sin mercados cuya categoría sea **Tennis, Esports, Crypto o Up or Down**.
+- **H5-4h:** como H4-4h, con la misma exclusión.
+
+**Categoría** = la `category` del mercado o, si no tiene, la del evento o, si tampoco, la **primera
+etiqueta** del evento en la API de Polymarket. Es la misma definición que en el histórico.
+
+**Evaluación:** el mismo criterio que la H4 (200 resueltas y 30 días como mínimo; éxito si el IC 95% queda
+por encima de 0). Además, H5 tiene que superar a la H4 del mismo horizonte. El histórico esperaba entre
++3% y +7% por dólar. Como el filtro se eligió mirando datos de 2024–2026, solo el resultado hacia adelante
+lo valida.

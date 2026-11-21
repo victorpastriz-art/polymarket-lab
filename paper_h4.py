@@ -33,8 +33,28 @@ ESTRATEGIAS = {
     "H4-4h": {"ventana": (2, 5), "lado": "favorito", "pmin": 0.50, "pmax": 0.85, "max_ops": 250},
     "H2-control": {"ventana": (21, 24), "lado": "barato", "pmin": 0.01, "pmax": 0.15, "max_ops": 250},
     "Azar": {"ventana": (21, 24), "lado": "azar", "pmin": 0.02, "pmax": 0.98, "max_ops": 250},
+    # Enmienda 2 (21-nov-2026): la H4 sin las categorías que perdieron en las dos muestras históricas
+    "H5-24h": {"ventana": (21, 24), "lado": "favorito", "pmin": 0.50, "pmax": 0.85, "max_ops": 250,
+               "excluir": {"Tennis", "Esports", "Crypto", "Up or Down"}},
+    "H5-4h": {"ventana": (2, 5), "lado": "favorito", "pmin": 0.50, "pmax": 0.85, "max_ops": 250,
+              "excluir": {"Tennis", "Esports", "Crypto", "Up or Down"}},
 }
-EVALUADAS = ["H4-24h", "H4-4h"]
+EVALUADAS = ["H4-24h", "H4-4h", "H5-24h", "H5-4h"]
+_CAT_EVENTO = {}
+
+
+def categoria_evento(ev_id, defecto):
+    """Categoría del evento como en el histórico: category del evento o, si no hay, la primera etiqueta."""
+    if ev_id in _CAT_EVENTO:
+        return _CAT_EVENTO[ev_id]
+    cat = None
+    if not str(ev_id).startswith("m"):
+        ev = get_json(f"{GAMMA}/events/{ev_id}", pausa=0.08)
+        if isinstance(ev, dict):
+            tags = ev.get("tags") or []
+            cat = ev.get("category") or next((t.get("label") for t in tags if isinstance(t, dict) and t.get("label")), None)
+    _CAT_EVENTO[ev_id] = cat or defecto
+    return _CAT_EVENTO[ev_id]
 MIN_OPS_VEREDICTO, MIN_DIAS_VEREDICTO = 200, 30
 FMT = "%Y-%m-%dT%H:%M:%SZ"
 
@@ -139,6 +159,15 @@ def buscar_entradas(ops):
         if c.empty:
             continue
         c = c.sort_values("volumen", ascending=False).drop_duplicates("event_id")
+        if regla.get("excluir"):
+            c["categoria"] = [categoria_evento(e, k) if k == "sin categoría" else k
+                              for e, k in zip(c["event_id"], c["categoria"])]
+            fuera = c["categoria"].isin(regla["excluir"])
+            for fila in c[fuera].to_dict("records"):
+                descartes.append({**fila, "fecha_escaneo": t.strftime(FMT), "motivo": f"categoría excluida ({fila['categoria']})"})
+            c = c[~fuera]
+        else:
+            c["categoria"] = [_CAT_EVENTO.get(e, k) for e, k in zip(c["event_id"], c["categoria"])]
         hechas = 0
         for fila in c.to_dict("records"):
             if hechas >= regla["max_ops"]:
