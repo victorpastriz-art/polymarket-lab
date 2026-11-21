@@ -71,3 +71,12 @@ etiqueta** del evento en la API de Polymarket. Es la misma definición que en el
 por encima de 0). Además, H5 tiene que superar a la H4 del mismo horizonte. El histórico esperaba entre
 +3% y +7% por dólar. Como el filtro se eligió mirando datos de 2024–2026, solo el resultado hacia adelante
 lo valida.
+
+### Enmienda 2b — 21-nov-2026, 13:00 hora de Madrid (corrección antes de ninguna resolución de H5)
+En el primer escaneo, la API devolvió "Sports" como primera etiqueta de los eventos de tenis (y de otros
+deportes). Así, el filtro "por primera etiqueta" no excluía Tennis/Esports, y las 266 apuestas H5 salieron
+todas como "Sports". Esas 266 apuestas se **anulan y se borran**: ninguna se había resuelto todavía.
+Desde ahora un mercado queda **fuera de H5 si su categoría o CUALQUIERA de las etiquetas de su evento** es
+Tennis, Esports, Crypto o Up or Down. Esto es algo más estricto que en el histórico (donde contaba la primera
+etiqueta), pero es lo que el estudio pretendía excluir. Las etiquetas de cada apuesta quedan guardadas
+en la columna `etiquetas`.

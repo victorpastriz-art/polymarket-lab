@@ -21,7 +21,7 @@ from comun import BASE, CLOB, GAMMA, get_json, lista_json
 
 PAPER = os.path.join(BASE, "paper")
 OPS = os.path.join(PAPER, "operaciones.csv")
-DESC = os.path.join(PAPER, "descartes.csv")
+DESC = os.path.join(PAPER, "descartes_v2.csv")  # descartes.csv (v1) quedó con columnas mezcladas
 RESUMEN = os.path.join(PAPER, "resumen.md")
 os.makedirs(PAPER, exist_ok=True)
 
@@ -41,19 +41,24 @@ ESTRATEGIAS = {
 }
 EVALUADAS = ["H4-24h", "H4-4h", "H5-24h", "H5-4h"]
 _CAT_EVENTO = {}
+_ETIQUETAS = {}
+COLS_DESCARTES = ["estrategia", "market_id", "event_id", "categoria", "etiquetas", "pregunta", "slug", "lado", "token",
+                  "precio_gamma", "volumen", "fecha_fin", "fecha_escaneo", "ask", "profundidad_usd", "motivo"]
 
 
 def categoria_evento(ev_id, defecto):
     """Categoría del evento como en el histórico: category del evento o, si no hay, la primera etiqueta."""
     if ev_id in _CAT_EVENTO:
         return _CAT_EVENTO[ev_id]
-    cat = None
+    cat, etiquetas = None, []
     if not str(ev_id).startswith("m"):
         ev = get_json(f"{GAMMA}/events/{ev_id}", pausa=0.08)
         if isinstance(ev, dict):
             tags = ev.get("tags") or []
-            cat = ev.get("category") or next((t.get("label") for t in tags if isinstance(t, dict) and t.get("label")), None)
+            etiquetas = [str(t.get("label")) for t in tags if isinstance(t, dict) and t.get("label")]
+            cat = ev.get("category") or (etiquetas[0] if etiquetas else None)
     _CAT_EVENTO[ev_id] = cat or defecto
+    _ETIQUETAS[ev_id] = etiquetas
     return _CAT_EVENTO[ev_id]
 MIN_OPS_VEREDICTO, MIN_DIAS_VEREDICTO = 200, 30
 FMT = "%Y-%m-%dT%H:%M:%SZ"
@@ -162,9 +167,12 @@ def buscar_entradas(ops):
         if regla.get("excluir"):
             c["categoria"] = [categoria_evento(e, k) if k == "sin categoría" else k
                               for e, k in zip(c["event_id"], c["categoria"])]
-            fuera = c["categoria"].isin(regla["excluir"])
+            c["etiquetas"] = ["|".join(_ETIQUETAS.get(e, [])) for e in c["event_id"]]
+            # Enmienda 2b: fuera si la categoría O CUALQUIERA de las etiquetas del evento está excluida
+            fuera = c["categoria"].isin(regla["excluir"]) | c["etiquetas"].map(
+                lambda t: bool(set(t.split("|")) & regla["excluir"]) if t else False)
             for fila in c[fuera].to_dict("records"):
-                descartes.append({**fila, "fecha_escaneo": t.strftime(FMT), "motivo": f"categoría excluida ({fila['categoria']})"})
+                descartes.append({**fila, "fecha_escaneo": t.strftime(FMT), "motivo": f"categoría excluida ({fila['categoria']}; {fila['etiquetas']})"})
             c = c[~fuera]
         else:
             c["categoria"] = [_CAT_EVENTO.get(e, k) for e, k in zip(c["event_id"], c["categoria"])]
@@ -308,7 +316,8 @@ def main():
     if nuevas:
         ops = pd.concat([ops, pd.DataFrame(nuevas)], ignore_index=True)
     if descartes:
-        pd.DataFrame(descartes).to_csv(DESC, mode="a", header=not os.path.exists(DESC), index=False)
+        pd.DataFrame(descartes).reindex(columns=COLS_DESCARTES).to_csv(
+            DESC, mode="a", header=not os.path.exists(DESC), index=False)
     if not ops.empty:
         ops.to_csv(OPS, index=False)
 
