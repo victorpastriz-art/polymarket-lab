@@ -12,11 +12,19 @@ from comun import DATA, anadir_columnas
 
 COMILLAS = "\"'“”‘’«»"
 RE_CON_COMILLAS = re.compile(
-    r"^\s*will\s+(?P<orador>.+?)\s+(?:say|says|mention|mentions)\s+[" + COMILLAS + r"](?P<palabra>.+?)[" + COMILLAS + r"]"
+    r"^\s*(?:will\s+)?(?P<orador>.+?)\s+(?:say|says|mention|mentions)\s+[" + COMILLAS + r"](?P<palabra>.+?)[" + COMILLAS + r"]"
     r"(?P<resto>.*)$", re.I)
 RE_SIN_COMILLAS = re.compile(
     r"^\s*will\s+(?P<orador>.+?)\s+(?:say|says|mention|mentions)\s+(?P<palabra>.+?)"
     r"(?P<resto>\s+(?:during|at|in|on|by|before|this|at least|\d+\+? times).*|\?)\s*$", re.I)
+
+
+ALIAS = {"donald trump": "trump", "president trump": "trump", "donald j. trump": "trump",
+         "karoline leavitt": "leavitt", "jerome powell": "powell", "jay powell": "powell",
+         "keir starmer": "starmer", "jd vance": "vance", "j.d. vance": "vance", "j. d. vance": "vance",
+         "kamala harris": "kamala", "bernie sanders": "bernie", "joe biden": "biden", "kevin warsh": "warsh",
+         "zohran mamdani": "mamdani", "elon musk": "elon", "elon": "elon"}
+RE_CITAS = re.compile(r"[" + COMILLAS + r"]([^" + COMILLAS + r"]{1,60})[" + COMILLAS + r"]")
 
 
 def normaliza(t):
@@ -30,7 +38,10 @@ def parsear(pregunta):
         if m:
             orador = normaliza(m.group("orador"))
             orador = re.sub(r"^(?:president|press secretary|chair(?:man)?|fed chair|secretary)\s+", "", orador)
-            return orador, normaliza(m.group("palabra")), m.group("resto").strip(" ?")
+            orador = ALIAS.get(orador, orador)
+            citas = sorted({normaliza(c) for c in RE_CITAS.findall(str(pregunta))})
+            palabra = " / ".join(citas) if citas else normaliza(m.group("palabra"))
+            return orador, palabra, m.group("resto").strip(" ?")
     return None, None, None
 
 

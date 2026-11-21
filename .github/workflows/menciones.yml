@@ -1,10 +1,15 @@
 name: Menciones (historia vs precio)
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      reusar_run:
+        description: "Id de una ejecución anterior cuyos precios reutilizar (vacío = descargarlos)"
+        default: ""
 
 permissions:
   contents: write
+  actions: read
 
 jobs:
   menciones:
@@ -26,8 +31,18 @@ jobs:
         run: python descargar_mercados.py --desde 2024-01
       - name: Paso 2 - extraer mercados de menciones
         run: python extraer_menciones.py
-      - name: Paso 3 - precios de TODOS los mercados de menciones
-        run: python descargar_precios.py --solo-ids data/menciones.csv --salida snapshots_menc.csv
+      - name: Precios ya descargados (si se reutilizan)
+        if: ${{ inputs.reusar_run != '' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: menciones-datos
+          run-id: ${{ inputs.reusar_run }}
+          github-token: ${{ github.token }}
+          path: previo
+      - name: Paso 3 - precios de los mercados de menciones (solo los que falten)
+        run: |
+          if [ -f previo/snapshots_menc.csv ]; then cp previo/snapshots_menc.csv data/snapshots_menc.csv; fi
+          python descargar_precios.py --solo-ids data/menciones.csv --salida snapshots_menc.csv
       - name: Paso 4 - historia vs precio
         run: python analisis_menciones.py
       - uses: actions/upload-artifact@v4
