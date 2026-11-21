@@ -1,6 +1,6 @@
 # Paper trading — carteras ficticias en Polymarket
 
-_Actualizado: 2026-11-21 02:24 UTC · reglas en [REGLAS.md](REGLAS.md)_
+_Actualizado: 2026-11-21 02:57 UTC · reglas en [REGLAS.md](REGLAS.md)_
 
 ## H4-24h
 
@@ -8,11 +8,11 @@ _Actualizado: 2026-11-21 02:24 UTC · reglas en [REGLAS.md](REGLAS.md)_
 
 ## H4-4h
 
-- Operaciones: **875** (305 resueltas, 569 abiertas, 1 anuladas)
-- Aciertos: **51.8%** (precio medio pagado 0.515)
-- P&L ficticio: **+9.22 $** sobre 3050 $
-- Rendimiento por $: **+0.30%** (IC 95% por evento: -10.43% a +10.93%)
-- **Veredicto:** En curso (305/200 resueltas, 0/30 días).
+- Operaciones: **875** (373 resueltas, 501 abiertas, 1 anuladas)
+- Aciertos: **49.3%** (precio medio pagado 0.517)
+- P&L ficticio: **-181.38 $** sobre 3730 $
+- Rendimiento por $: **-4.86%** (IC 95% por evento: -14.44% a +4.72%)
+- **Veredicto:** En curso (373/200 resueltas, 0/30 días).
 
 ## H2-control
 
