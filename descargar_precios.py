@@ -57,6 +57,7 @@ def main():
     ap.add_argument("--semilla", type=int, default=42)
     ap.add_argument("--salida", default="snapshots.csv", help="fichero dentro de data/")
     ap.add_argument("--excluir", default=None, help="CSV con columna market_id de mercados a no usar")
+    ap.add_argument("--solo-ids", default=None, help="CSV con columna market_id: baja exactamente esos (sin muestreo)")
     args = ap.parse_args()
 
     m = pd.read_csv(os.path.join(DATA, "mercados.csv"),
@@ -71,12 +72,16 @@ def main():
         fin = pd.to_datetime(m["fecha_fin"], utc=True, errors="coerce")
         m = m[fin >= pd.Timestamp(args.desde, tz="UTC")]
 
-    menc = m[m["mencion"]]
-    menc = menc.sample(min(args.menciones, len(menc)), random_state=args.semilla)
-    top = m["cat"].value_counts().head(args.max_categorias).index
-    partes = [g.sample(min(args.por_categoria, len(g)), random_state=args.semilla)
-              for c, g in m[m["cat"].isin(top) & ~m["mencion"]].groupby("cat")]
-    m = pd.concat([menc] + partes)
+    if args.solo_ids:
+        ids = set(pd.read_csv(args.solo_ids, usecols=["market_id"])["market_id"].astype(str))
+        m = m[m["market_id"].astype(str).isin(ids)]
+    else:
+        menc = m[m["mencion"]]
+        menc = menc.sample(min(args.menciones, len(menc)), random_state=args.semilla)
+        top = m["cat"].value_counts().head(args.max_categorias).index
+        partes = [g.sample(min(args.por_categoria, len(g)), random_state=args.semilla)
+                  for c, g in m[m["cat"].isin(top) & ~m["mencion"]].groupby("cat")]
+        m = pd.concat([menc] + partes)
     print(m["cat"].value_counts().to_string())
 
     ruta = os.path.join(DATA, args.salida)

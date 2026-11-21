@@ -1,0 +1,47 @@
+name: Menciones (historia vs precio)
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  menciones:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Recuperar meses ya descargados
+        uses: actions/cache@v4
+        with:
+          path: data/meses
+          key: meses-${{ github.run_id }}
+          restore-keys: meses-
+      - name: Paso 1 - mercados resueltos (solo lo que falte)
+        run: python descargar_mercados.py --desde 2024-01
+      - name: Paso 2 - extraer mercados de menciones
+        run: python extraer_menciones.py
+      - name: Paso 3 - precios de TODOS los mercados de menciones
+        run: python descargar_precios.py --solo-ids data/menciones.csv --salida snapshots_menc.csv
+      - name: Paso 4 - historia vs precio
+        run: python analisis_menciones.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: menciones-datos
+          path: |
+            data/menciones.csv
+            data/snapshots_menc.csv
+      - name: Guardar resultado en el repositorio
+        if: always()
+        run: |
+          git config user.name "polymarket-lab-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -f resultados/menciones.md resultados/menciones_estrategia.csv || true
+          git commit -m "Menciones: historia vs precio (ejecución ${{ github.run_id }})" || exit 0
+          for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
