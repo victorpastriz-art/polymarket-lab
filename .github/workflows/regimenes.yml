@@ -1,0 +1,51 @@
+name: Estudio de rachas H4
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  regimenes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Recuperar meses ya descargados
+        uses: actions/cache@v4
+        with:
+          path: data/meses
+          key: meses-${{ github.run_id }}
+          restore-keys: meses-
+      - name: Muestra de descubrimiento
+        uses: actions/download-artifact@v4
+        with:
+          name: polymarket-lab-resultados
+          run-id: 44624425236
+          github-token: ${{ github.token }}
+          path: original
+      - name: Muestra de confirmación
+        uses: actions/download-artifact@v4
+        with:
+          name: confirmacion-snapshots
+          run-id: 44801819211
+          github-token: ${{ github.token }}
+          path: confirmacion
+      - name: Mercados resueltos (solo lo que falte)
+        run: python descargar_mercados.py --desde 2024-01
+      - name: Estudio
+        run: python estudio_regimenes.py --muestra descubrimiento=original/data/snapshots.csv --muestra confirmacion=confirmacion/snapshots_conf.csv
+      - name: Guardar resultado en el repositorio
+        if: always()
+        run: |
+          git config user.name "polymarket-lab-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -f resultados/regimenes.md || true
+          git commit -m "Estudio de rachas H4 (ejecución ${{ github.run_id }})" || exit 0
+          for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
