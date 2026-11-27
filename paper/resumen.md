@@ -1,22 +1,22 @@
 # Paper trading — carteras ficticias en Polymarket
 
-_Actualizado: 2026-11-27 14:24 UTC · reglas en [REGLAS.md](REGLAS.md)_
+_Actualizado: 2026-11-27 14:58 UTC · reglas en [REGLAS.md](REGLAS.md)_
 
 ## H4-24h
 
-- Operaciones: **14295** (11889 resueltas, 2399 abiertas, 7 anuladas)
-- Aciertos: **53.1%** (precio medio pagado 0.530)
-- P&L ficticio: **+603.69 $** sobre 118890 $
-- Rendimiento por $: **+0.51%** (IC 95% por evento: -1.25% a +2.18%)
-- **Veredicto:** En curso (11889/200 resueltas, 6/30 días).
+- Operaciones: **14295** (11958 resueltas, 2330 abiertas, 7 anuladas)
+- Aciertos: **52.9%** (precio medio pagado 0.530)
+- P&L ficticio: **+104.24 $** sobre 119580 $
+- Rendimiento por $: **+0.09%** (IC 95% por evento: -1.66% a +1.88%)
+- **Veredicto:** En curso (11958/200 resueltas, 6/30 días).
 
 ## H4-4h
 
-- Operaciones: **13323** (12840 resueltas, 456 abiertas, 27 anuladas)
-- Aciertos: **54.1%** (precio medio pagado 0.538)
-- P&L ficticio: **+1025.37 $** sobre 128400 $
-- Rendimiento por $: **+0.80%** (IC 95% por evento: -0.80% a +2.33%)
-- **Veredicto:** En curso (12840/200 resueltas, 6/30 días).
+- Operaciones: **13323** (12916 resueltas, 380 abiertas, 27 anuladas)
+- Aciertos: **53.9%** (precio medio pagado 0.538)
+- P&L ficticio: **+528.23 $** sobre 129160 $
+- Rendimiento por $: **+0.41%** (IC 95% por evento: -1.18% a +1.96%)
+- **Veredicto:** En curso (12916/200 resueltas, 6/30 días).
 
 ## H2-control
 
@@ -27,24 +27,24 @@ _Actualizado: 2026-11-27 14:24 UTC · reglas en [REGLAS.md](REGLAS.md)_
 
 ## Azar
 
-- Operaciones: **14274** (11956 resueltas, 2308 abiertas, 10 anuladas)
-- Aciertos: **50.4%** (precio medio pagado 0.544)
-- P&L ficticio: **-6407.22 $** sobre 119560 $
-- Rendimiento por $: **-5.36%** (IC 95% por evento: -7.11% a -3.53%)
+- Operaciones: **14274** (11975 resueltas, 2288 abiertas, 11 anuladas)
+- Aciertos: **50.5%** (precio medio pagado 0.544)
+- P&L ficticio: **-6301.24 $** sobre 119750 $
+- Rendimiento por $: **-5.26%** (IC 95% por evento: -7.07% a -3.46%)
 
 ## H5-24h
 
-- Operaciones: **1608** (1193 resueltas, 413 abiertas, 2 anuladas)
+- Operaciones: **1608** (1194 resueltas, 412 abiertas, 2 anuladas)
 - Aciertos: **63.2%** (precio medio pagado 0.673)
-- P&L ficticio: **-728.27 $** sobre 11930 $
-- Rendimiento por $: **-6.10%** (IC 95% por evento: -10.35% a -2.06%)
-- **Veredicto:** En curso (1193/200 resueltas, 6/30 días).
+- P&L ficticio: **-724.18 $** sobre 11940 $
+- Rendimiento por $: **-6.07%** (IC 95% por evento: -9.90% a -1.80%)
+- **Veredicto:** En curso (1194/200 resueltas, 6/30 días).
 
 ## H5-4h
 
-- Operaciones: **2309** (2206 resueltas, 101 abiertas, 2 anuladas)
-- Aciertos: **62.8%** (precio medio pagado 0.645)
-- P&L ficticio: **-506.24 $** sobre 22060 $
-- Rendimiento por $: **-2.29%** (IC 95% por evento: -5.50% a +0.84%)
-- **Veredicto:** En curso (2206/200 resueltas, 6/30 días).
+- Operaciones: **2309** (2208 resueltas, 99 abiertas, 2 anuladas)
+- Aciertos: **62.9%** (precio medio pagado 0.645)
+- P&L ficticio: **-493.99 $** sobre 22080 $
+- Rendimiento por $: **-2.24%** (IC 95% por evento: -5.49% a +1.04%)
+- **Veredicto:** En curso (2208/200 resueltas, 6/30 días).
 
