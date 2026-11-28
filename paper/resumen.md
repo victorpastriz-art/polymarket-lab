@@ -1,22 +1,22 @@
 # Paper trading — carteras ficticias en Polymarket
 
-_Actualizado: 2026-11-28 10:06 UTC · reglas en [REGLAS.md](REGLAS.md)_
+_Actualizado: 2026-11-28 10:58 UTC · reglas en [REGLAS.md](REGLAS.md)_
 
 ## H4-24h
 
-- Operaciones: **16462** (13794 resueltas, 2659 abiertas, 9 anuladas)
-- Aciertos: **52.3%** (precio medio pagado 0.530)
-- P&L ficticio: **-1398.79 $** sobre 137940 $
-- Rendimiento por $: **-1.01%** (IC 95% por evento: -2.66% a +0.55%)
-- **Veredicto:** En curso (13794/200 resueltas, 7/30 días).
+- Operaciones: **16462** (13916 resueltas, 2537 abiertas, 9 anuladas)
+- Aciertos: **52.2%** (precio medio pagado 0.529)
+- P&L ficticio: **-1800.59 $** sobre 139160 $
+- Rendimiento por $: **-1.29%** (IC 95% por evento: -2.86% a +0.36%)
+- **Veredicto:** En curso (13916/200 resueltas, 7/30 días).
 
 ## H4-4h
 
-- Operaciones: **15193** (14525 resueltas, 639 abiertas, 29 anuladas)
-- Aciertos: **53.3%** (precio medio pagado 0.538)
-- P&L ficticio: **-1283.92 $** sobre 145250 $
-- Rendimiento por $: **-0.88%** (IC 95% por evento: -2.48% a +0.61%)
-- **Veredicto:** En curso (14525/200 resueltas, 7/30 días).
+- Operaciones: **15193** (14570 resueltas, 594 abiertas, 29 anuladas)
+- Aciertos: **53.2%** (precio medio pagado 0.538)
+- P&L ficticio: **-1460.16 $** sobre 145700 $
+- Rendimiento por $: **-1.00%** (IC 95% por evento: -2.50% a +0.57%)
+- **Veredicto:** En curso (14570/200 resueltas, 7/30 días).
 
 ## H2-control
 
@@ -27,10 +27,10 @@ _Actualizado: 2026-11-28 10:06 UTC · reglas en [REGLAS.md](REGLAS.md)_
 
 ## Azar
 
-- Operaciones: **16471** (13787 resueltas, 2672 abiertas, 12 anuladas)
-- Aciertos: **50.4%** (precio medio pagado 0.541)
-- P&L ficticio: **-6762.18 $** sobre 137870 $
-- Rendimiento por $: **-4.90%** (IC 95% por evento: -6.54% a -3.20%)
+- Operaciones: **16471** (13905 resueltas, 2554 abiertas, 12 anuladas)
+- Aciertos: **50.4%** (precio medio pagado 0.540)
+- P&L ficticio: **-6819.76 $** sobre 139050 $
+- Rendimiento por $: **-4.90%** (IC 95% por evento: -6.69% a -3.17%)
 
 ## H5-24h
 
